@@ -14,7 +14,8 @@ class TestCreateOrder:
         ingredients = {"ingredients": [Ingredients.BUN, Ingredients.KOKLETA, Ingredients.SAUCE, Ingredients.BUN]}
         resp = requests.post(Urls.CREATE_ORDER, data=ingredients)
 
-        assert resp.status_code == 200 and TextAnswer.TRUE in resp.text
+        assert resp.status_code == 200
+        assert resp.json()['success'] is True
 
     @allure.title("Создание заказа без авторизации и с ингредиентами")
     def test_no_auth_create_order(self):
@@ -22,7 +23,8 @@ class TestCreateOrder:
         ingredients = {"ingredients": [Ingredients.BUN, Ingredients.KOKLETA, Ingredients.SAUCE, Ingredients.BUN]}
         resp = requests.post(Urls.CREATE_ORDER, data=ingredients)
 
-        assert resp.status_code == 200 and TextAnswer.TRUE in resp.text
+        assert resp.status_code == 200
+        assert resp.json()['success'] is True
 
     @allure.title("Создание заказа с авторизацией без ингредиентов")
     def test_auth_create_order_without_ingredients(self, create_user):
@@ -33,7 +35,9 @@ class TestCreateOrder:
         ingredients = {"ingredients": ['']}
         resp = requests.post(Urls.CREATE_ORDER, data=ingredients)
 
-        assert resp.status_code == 400 and TextAnswer.NOT_INGREDIENT in resp.text
+        assert resp.status_code == 400
+        assert resp.json()['success'] is False
+        assert resp.json()['message'] == TextAnswer.NOT_INGREDIENT
 
     @allure.title("Создание заказ без авторизации и с неправильным хешем ингредиента")
     def test_no_auth_create_order_incorrect_hash(self):
@@ -41,4 +45,5 @@ class TestCreateOrder:
         ingredients = {"ingredients": [Ingredients.ENIGMA, Ingredients.KOKLETA]}
         resp = requests.post(Urls.CREATE_ORDER, data=ingredients)
 
-        assert resp.status_code == 500 and TextAnswer.ORDER_INCORRECT_INGREDIENTS in resp.text
+        assert resp.status_code == 500
+        assert TextAnswer.ORDER_INCORRECT_INGREDIENTS in resp.text

@@ -13,7 +13,8 @@ class TestLogin:
         del data["name"]
         resp = requests.post(Urls.LOGIN_USER, data=data)
 
-        assert resp.status_code == 200 and TextAnswer.TRUE in resp.text
+        assert resp.status_code == 200
+        assert resp.json()['success'] is True
 
     @allure.title("Логин с неверным логином и паролем")
     def test_login_with_incorrect_data(self):
@@ -23,7 +24,9 @@ class TestLogin:
         del user_data["name"]
         resp = requests.post(Urls.LOGIN_USER, data=user_data)
 
-        assert resp.status_code == 401 and TextAnswer.INCORRECT_DATA
+        assert resp.status_code == 401
+        assert resp.json()['success'] is False
+        assert resp.json()['message'] == TextAnswer.INCORRECT_DATA
 
     @allure.title("Логин с неверным паролем")
     def test_login_with_incorrect_pass(self, create_user):
@@ -34,7 +37,9 @@ class TestLogin:
         data['password'] = ''
         resp = requests.post(Urls.LOGIN_USER, data=data)
 
-        assert resp.status_code == 401 and TextAnswer.INCORRECT_DATA
+        assert resp.status_code == 401
+        assert resp.json()['success'] is False
+        assert resp.json()['message'] == TextAnswer.INCORRECT_DATA
 
     @allure.title("Логин с неверным логином")
     def test_login_with_incorrect_login(self, create_user):
@@ -44,4 +49,6 @@ class TestLogin:
         data['email'] = ''
         resp = requests.post(Urls.LOGIN_USER, data=data)
 
-        assert resp.status_code == 401 and TextAnswer.INCORRECT_DATA
+        assert resp.status_code == 401
+        assert resp.json()['success'] is False
+        assert resp.json()['message'] == TextAnswer.INCORRECT_DATA

@@ -18,6 +18,7 @@ class TextAnswer:
     NOT_INGREDIENT = "Ingredient ids must be provided"
     ORDER_INCORRECT_INGREDIENTS = 'Internal Server Error'
     ORDER_WITHOUT_AUTH = 'You should be authorised'
+    USER_DATA = 'Email, password and name are required fields'
 
 
 class Ingredients:

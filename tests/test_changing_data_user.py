@@ -15,7 +15,8 @@ class TestChangingDataUsers:
         new_email = {"email": new_email_value}
         replace = requests.patch(Urls.REPLACE_DATA, json=new_email, headers=headers)
 
-        assert replace.status_code == 200 and replace.json()['user']['email'] == new_email['email']
+        assert replace.status_code == 200
+        assert replace.json()['user']['email'] == new_email['email']
 
     @allure.title("Изменение пароля авторизованным пользователем")
     def test_auth_replacing_password_user(self, create_user):
@@ -27,7 +28,8 @@ class TestChangingDataUsers:
         new_password = {"password": new_password_value}
         replace = requests.patch(Urls.REPLACE_DATA, json=new_password, headers=headers)
 
-        assert replace.status_code == 200 and TextAnswer.TRUE in replace.text
+        assert replace.status_code == 200
+        assert replace.json()['success'] is True
 
     @allure.title("Изменение имени авторизованным пользователем")
     def test_auth_replacing_name_user(self, create_user):
@@ -39,7 +41,8 @@ class TestChangingDataUsers:
         new_name = {"name": new_name_value}
         replace = requests.patch(Urls.REPLACE_DATA, json=new_name, headers=headers)
 
-        assert replace.status_code == 200 and replace.json()['user']['name'] == new_name['name']
+        assert replace.status_code == 200
+        assert replace.json()['user']['name'] == new_name['name']
 
     @allure.title("Изменение имени неавторизованным пользователем")
     def test_not_auth_replacing_date_user(self, create_user):
@@ -51,4 +54,6 @@ class TestChangingDataUsers:
         new_name = {"name": new_name_value}
         replace = requests.patch(Urls.REPLACE_DATA, json=new_name, headers=headers)
 
-        assert replace.status_code == 401 and TextAnswer.UNAUTHORIZED in replace.text
+        assert replace.status_code == 401
+        assert replace.json()['success'] is False
+        assert replace.json()['message'] == TextAnswer.ORDER_WITHOUT_AUTH
