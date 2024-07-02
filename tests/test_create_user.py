@@ -1,0 +1,36 @@
+import allure
+import requests
+
+from data import Urls, TextAnswer
+from methods import Methods
+
+
+class TestCreateUser:
+    @allure.title('Создание уникального пользователя')
+    def test_create_unique_user(self, create_user):
+
+        respons_created, data = create_user
+
+        assert respons_created.status_code == 200
+        assert respons_created.json()['success'] is True
+
+    @allure.title("Создание пользователя, который уже существует")
+    def test_create_not_unique_user(self, create_user):
+
+        respons_created, data = create_user
+        resp = requests.post(Urls.CREATE_USER, data=data)
+
+        assert resp.status_code == 403
+        assert resp.json()['success'] is False
+
+    @allure.title("Создание пользователя без одного обязательного поля")
+    def test_create_invalid_date_user(self):
+
+        methods = Methods()
+        req = methods.generate_user_data()
+        req['name'] = ''
+        resp = requests.post(Urls.CREATE_USER, data=req)
+
+        assert resp.status_code == 403
+        assert resp.json()['success'] is False
+        assert resp.json()['message'] == TextAnswer.USER_DATA
